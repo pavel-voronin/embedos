@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "declaration": true,
+    "emitDeclarationOnly": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": false,
+    "rewriteRelativeImportExtensions": true,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "target": "ES2022"
+  },
+  "include": ["src/recipe.ts"]
+}

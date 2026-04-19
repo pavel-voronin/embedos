@@ -1,0 +1,9 @@
+cat
+Tags: files, read
+
+Print file contents to stdout.
+
+> cat --help
+@ cat /etc/passwd
+@(Read bashrc) cat /root/.bashrc
+@(Read ls entry) cat /root/.local/share/fz1/catalog/fs/ls

@@ -1,0 +1,8 @@
+chmod
+Tags: files, permissions
+
+Change file permissions.
+
+> chmod --help
+@ chmod +x /bin/script.sh
+@(Make executable) chmod +x /tmp/run.sh

@@ -1,0 +1,12 @@
+node_modules/
+.cache/
+.tmp-*/
+dist/
+packages/**/dist/
+.vite/
+public/playground/cdn/vendor/
+packages/vite/playground/cdn/vendor/
+packages/debian-bullseye-busybox-recipe/rootfs/embedos-rootfs.ext2
+packages/debian-bullseye-busybox-runtime/rootfs/embedos-rootfs.ext2
+.DS_Store
+.embedos

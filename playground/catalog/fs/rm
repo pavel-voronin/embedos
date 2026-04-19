@@ -1,0 +1,9 @@
+rm
+Tags: files, delete
+
+Remove files and directories.
+
+> rm --help
+@ rm /tmp/bashrc.copy
+@(Recursive delete) rm -rf /tmp/catalog.copy
+@(Clean work dir) rm -rf /tmp/work

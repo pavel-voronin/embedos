@@ -1,0 +1,10 @@
+fz1
+Tags: shell, launcher, catalog
+
+Terminal catalog and picker bundled into this environment.
+
+> fz1 --help
+@ fz1
+@(Open shell command catalog) fz1 --catalog-dir /root/.local/share/fz1/catalog
+@(Search file commands) fz1 --catalog-dir /root/.local/share/fz1/catalog fs
+@(Search system commands) fz1 --catalog-dir /root/.local/share/fz1/catalog system

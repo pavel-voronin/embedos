@@ -1,0 +1,37 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-json",
+  "workspaces": {
+    ".": {
+      "entry": ["index.html", "playground/**/*.{js,ts,vue}", "scripts/**/*.ts"],
+      "project": [
+        "index.html",
+        "playground/**/*.{css,d.ts,js,ts,vue}",
+        "scripts/**/*.{js,ts}",
+        "vite*.ts"
+      ],
+      "ignoreDependencies": ["playwright", "@iconify-json/streamline-ultimate-color"],
+      "ignoreUnresolved": ["^~icons\\/streamline-ultimate-color\\/.*$"]
+    },
+    "packages/vue": {
+      "entry": ["src/lib.ts"],
+      "project": ["src/**/*.{d.ts,js,ts,vue}"]
+    },
+    "packages/vite": {
+      "entry": ["src/index.ts", "src/index.api.ts"],
+      "project": ["src/**/*.{d.ts,js,ts}"],
+      "ignoreDependencies": ["vue"]
+    },
+    "packages/debian-bullseye-busybox-runtime": {
+      "entry": ["src/index.ts"],
+      "project": ["src/**/*.{d.ts,js,ts}"]
+    },
+    "packages/debian-bullseye-busybox-recipe": {
+      "entry": ["src/recipe.ts"],
+      "project": ["src/**/*.{d.ts,js,ts}"]
+    },
+    "packages/debian-bullseye-busybox-image-recipe": {
+      "entry": ["src/recipe.ts"],
+      "project": ["src/**/*.{d.ts,js,ts}"]
+    }
+  }
+}

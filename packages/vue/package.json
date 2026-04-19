@@ -1,0 +1,32 @@
+{
+  "name": "@embedos/vue",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "./dist/embedos-vue.js",
+  "types": "./dist/vue/src/lib.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist",
+    "!dist/playground",
+    "!dist/**/*.test.d.ts",
+    "!dist/core/index.node.d.ts"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/vue/src/lib.d.ts",
+      "import": "./dist/embedos-vue.js",
+      "default": "./dist/embedos-vue.js"
+    },
+    "./style.css": "./dist/lib.css"
+  },
+  "dependencies": {
+    "@leaningtech/cheerpx": "^1.2.2",
+    "@xterm/xterm": "^6.0.0"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  }
+}

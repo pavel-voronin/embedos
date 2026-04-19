@@ -1,0 +1,10 @@
+Bash
+Tags: shell, interactive
+
+Interactive shell for this tiny x86 environment.
+
+> bash --help
+@ bash
+@(Login shell) bash -l
+@(Run one command) bash -lc 'uname -a'
+@(List builtins) bash -lc help

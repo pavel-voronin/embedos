@@ -1,0 +1,179 @@
+name: Publish packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-packages-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Detect packages to publish
+        id: changed
+        env:
+          OUTPUT_FILE: ${{ runner.temp }}/changed-packages.json
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+          import path from 'node:path';
+
+          const rootDir = process.cwd();
+          const packagesDir = path.join(rootDir, 'packages');
+          const outputFile = process.env.OUTPUT_FILE;
+          const outputEnv = process.env.GITHUB_OUTPUT;
+          const buildCommands = {
+            '@embedos/debian-bullseye-busybox-recipe': 'build:recipes',
+            '@embedos/debian-bullseye-busybox-image-recipe': 'build:recipes',
+            '@embedos/vue': 'build:lib',
+            '@embedos/vite': 'build:vite',
+            '@embedos/debian-bullseye-busybox-runtime': 'build:runtime',
+          };
+
+          function isPublished(packageName, version) {
+            try {
+              execFileSync('npm', ['view', `${packageName}@${version}`, 'version'], {
+                env: process.env,
+                stdio: 'ignore',
+              });
+              return true;
+            } catch {
+              return false;
+            }
+          }
+
+          const packages = [];
+          for (const entry of fs.readdirSync(packagesDir, { withFileTypes: true })) {
+            if (!entry.isDirectory()) {
+              continue;
+            }
+
+            const file = path.join(packagesDir, entry.name, 'package.json');
+            if (!fs.existsSync(file)) {
+              continue;
+            }
+
+            const currentJson = JSON.parse(fs.readFileSync(file, 'utf8'));
+            if (!currentJson.name || !currentJson.version) {
+              continue;
+            }
+
+            if (currentJson.private === true) {
+              continue;
+            }
+
+            if (currentJson.publishConfig?.access && currentJson.publishConfig.access !== 'public') {
+              continue;
+            }
+
+            if (isPublished(currentJson.name, currentJson.version)) {
+              continue;
+            }
+
+            packages.push({
+              file: path.relative(rootDir, file),
+              name: currentJson.name,
+              version: currentJson.version,
+              build: buildCommands[currentJson.name] ?? null,
+            });
+          }
+
+          fs.writeFileSync(outputFile, `${JSON.stringify(packages, null, 2)}\n`);
+          fs.appendFileSync(outputEnv, `count=${packages.length}\n`);
+          fs.appendFileSync(outputEnv, `packages_file=${outputFile}\n`);
+          NODE
+
+      - name: Stop when nothing to publish
+        if: steps.changed.outputs.count == '0'
+        run: |
+          echo "No unpublished package versions detected."
+
+      - name: Install dependencies
+        if: steps.changed.outputs.count != '0'
+        run: npm ci
+
+      - name: Typecheck
+        if: steps.changed.outputs.count != '0'
+        run: npm run typecheck
+
+      - name: Build packages to publish
+        if: steps.changed.outputs.count != '0'
+        env:
+          PACKAGES_FILE: ${{ steps.changed.outputs.packages_file }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const packages = JSON.parse(fs.readFileSync(process.env.PACKAGES_FILE, 'utf8'));
+          const buildCommands = [...new Set(packages.map((pkg) => pkg.build).filter(Boolean))];
+
+          for (const command of buildCommands) {
+            execFileSync('npm', ['run', command], { stdio: 'inherit' });
+          }
+          NODE
+
+      - name: Verify package tarballs
+        if: steps.changed.outputs.count != '0'
+        env:
+          PACKAGES_FILE: ${{ steps.changed.outputs.packages_file }}
+        run: npm run pack:check
+
+      - name: Publish packages
+        if: steps.changed.outputs.count != '0'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          PACKAGES_FILE: ${{ steps.changed.outputs.packages_file }}
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { execFileSync } from 'node:child_process';
+
+          const packages = JSON.parse(fs.readFileSync(process.env.PACKAGES_FILE, 'utf8'));
+
+          for (const pkg of packages) {
+            const workspace = pkg.file.replace(/\/package\.json$/, '');
+            const packageSpec = `${pkg.name}@${pkg.version}`;
+
+            try {
+              execFileSync('npm', ['view', packageSpec, 'version'], {
+                stdio: 'ignore',
+                env: process.env,
+              });
+              console.log(`${packageSpec} already exists on npm, skipping.`);
+              continue;
+            } catch {
+              // Package version is not published yet.
+            }
+
+            execFileSync(
+              'npm',
+              ['publish', '--workspace', workspace, '--access', 'public'],
+              {
+                stdio: 'inherit',
+                env: process.env,
+              },
+            );
+          }
+          NODE

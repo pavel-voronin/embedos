@@ -1,0 +1,9 @@
+cp
+Tags: files, copy
+
+Copy files inside the writable overlay.
+
+> cp --help
+@ cp /root/.bashrc /tmp/bashrc.copy
+@(Copy catalog tree) cp -R /root/.local/share/fz1/catalog /tmp/catalog.copy
+@(Backup bashrc) cp /root/.bashrc /tmp/bashrc.bak

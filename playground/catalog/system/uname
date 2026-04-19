@@ -1,0 +1,9 @@
+uname
+Tags: system, kernel
+
+Print kernel and machine information from the guest.
+
+> uname --help
+@ uname
+@(Kernel and arch) uname -a
+@(Machine only) uname -m

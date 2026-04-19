@@ -1,0 +1,25 @@
+{
+  "name": "@embedos/debian-bullseye-busybox-recipe",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "./dist/recipe.js",
+  "types": "./dist/recipe.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "Dockerfile",
+    "dist"
+  ],
+  "embedosConfig": {
+    "configFile": "./dist/recipe.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/recipe.d.ts",
+      "import": "./dist/recipe.js",
+      "default": "./dist/recipe.js"
+    }
+  }
+}

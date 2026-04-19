@@ -1,0 +1,8 @@
+env
+Tags: system, environment
+
+Print environment variables.
+
+> env --help
+@ env
+@(Show shell vars) env | sort

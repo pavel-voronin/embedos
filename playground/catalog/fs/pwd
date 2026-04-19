@@ -1,0 +1,9 @@
+pwd
+Tags: files, path
+
+Print the current working directory.
+
+> pwd --help
+@ pwd
+@(Print inside tmp) bash -lc 'cd /tmp && pwd'
+@(Print catalog dir) bash -lc 'cd /root/.local/share/fz1/catalog && pwd'

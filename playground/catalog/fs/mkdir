@@ -1,0 +1,9 @@
+mkdir
+Tags: files, create
+
+Create directories in the writable overlay.
+
+> mkdir --help
+@ mkdir /tmp/work
+@(Nested path) mkdir -p /tmp/work/logs
+@(Scratch catalog dir) mkdir -p /tmp/catalog-test/network

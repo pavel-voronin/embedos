@@ -1,0 +1,25 @@
+{
+  "name": "@embedos/vite",
+  "version": "0.2.0",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "dist"
+  ],
+  "dependencies": {
+    "typescript": "^6.0.2",
+    "vue": "^3.5.31"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  }
+}

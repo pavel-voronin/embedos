@@ -1,0 +1,44 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.dom.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "noEmit": true,
+    "paths": {
+      "@embedos/debian-bullseye-busybox-recipe": [
+        "./packages/debian-bullseye-busybox-recipe/src/recipe.ts"
+      ],
+      "@embedos/debian-bullseye-busybox-image-recipe": [
+        "./packages/debian-bullseye-busybox-image-recipe/src/recipe.ts"
+      ],
+      "@embedos/debian-bullseye-busybox-runtime": [
+        "./packages/debian-bullseye-busybox-runtime/src/index.ts"
+      ],
+      "@embedos/vite": ["./packages/vite/src/index.ts"],
+      "@embedos/vue": ["./packages/vue/src/lib.ts"]
+    },
+    "resolveJsonModule": true,
+    "target": "ES2022",
+    "types": ["node"],
+    "verbatimModuleSyntax": true
+  },
+  "include": [
+    "env.d.ts",
+    "eslint.config.ts",
+    "packages/*/*.d.ts",
+    "packages/**/*.ts",
+    "packages/**/*.vue",
+    "playground/**/*.ts",
+    "playground/**/*.d.ts",
+    "playground/**/*.vue",
+    "scripts/**/*.ts",
+    "vitest.config.ts",
+    "vite.config.ts",
+    "vite.vite.config.ts",
+    "vite.lib.config.ts"
+  ],
+  "exclude": ["**/dist/**"]
+}

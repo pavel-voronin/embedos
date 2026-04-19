@@ -1,0 +1,7 @@
+clear
+Tags: system, terminal
+
+Clear the terminal screen.
+
+> clear --help
+@ clear

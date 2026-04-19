@@ -1,0 +1,11 @@
+ls
+Tags: files, listing
+
+List directory contents via busybox.
+
+> ls --help
+@ ls
+@(Long listing) ls -l
+@(Include dotfiles) ls -la
+@(List root) ls /
+@(List catalog) ls /root/.local/share/fz1/catalog

@@ -1,0 +1,7 @@
+tty
+Tags: system, terminal
+
+Print the terminal device name.
+
+> tty --help
+@ tty

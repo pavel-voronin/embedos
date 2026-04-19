@@ -1,0 +1,76 @@
+@import "tailwindcss";
+
+@theme {
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", monospace;
+
+  --color-ui-shell-0: #030712;
+  --color-ui-shell-1: #111827;
+  --color-ui-shell-2: #0f172a;
+  --color-ui-window-adaptive-top: #143042;
+  --color-ui-window-adaptive-bottom: #0a1c2b;
+  --color-ui-window-fixed-top: #25283b;
+  --color-ui-window-fixed-bottom: #171d2b;
+  --color-ui-topbar-top: #22324b;
+  --color-ui-topbar-bottom: #162235;
+  --color-ui-border: #64748b;
+  --color-ui-border-strong: #94a3b8;
+  --color-ui-border-soft: #475569;
+  --color-ui-surface: #162033;
+  --color-ui-surface-strong: #1e293b;
+  --color-ui-surface-hover: #273449;
+  --color-ui-panel: #111827;
+  --color-ui-panel-strong: #0f172a;
+  --color-ui-text: #e5eefc;
+  --color-ui-text-muted: #b5c4da;
+  --color-ui-text-dim: #90a4c2;
+  --color-ui-accent: #7dd3fc;
+  --color-ui-accent-strong: #38bdf8;
+  --color-ui-frame-adaptive: #123245;
+  --color-ui-frame-fixed: #2b3147;
+  --color-ui-dot-close: #ff5f57;
+  --color-ui-dot-minimize: #febc2e;
+  --color-ui-dot-maximize: #28c840;
+
+  --background-image-ui-shell: radial-gradient(
+    circle at top,
+    color-mix(in srgb, var(--color-ui-shell-2) 88%, transparent),
+    var(--color-ui-shell-0) 58%
+  );
+  --background-image-ui-window-adaptive: linear-gradient(
+    180deg,
+    var(--color-ui-window-adaptive-top),
+    var(--color-ui-window-adaptive-bottom)
+  );
+  --background-image-ui-window-fixed: linear-gradient(
+    180deg,
+    var(--color-ui-window-fixed-top),
+    var(--color-ui-window-fixed-bottom)
+  );
+  --background-image-ui-topbar: linear-gradient(
+    180deg,
+    var(--color-ui-topbar-top),
+    var(--color-ui-topbar-bottom)
+  );
+  --background-image-ui-frame-adaptive:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-ui-frame-adaptive) 92%, transparent),
+      color-mix(in srgb, var(--color-ui-window-adaptive-bottom) 98%, transparent)
+    ),
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, var(--color-ui-accent) 14%, transparent),
+      transparent 42%
+    );
+  --background-image-ui-frame-fixed:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-ui-frame-fixed) 92%, transparent),
+      color-mix(in srgb, var(--color-ui-window-fixed-bottom) 98%, transparent)
+    ),
+    radial-gradient(
+      circle at top left,
+      color-mix(in srgb, #fb923c 14%, transparent),
+      transparent 40%
+    );
+}
