@@ -2,7 +2,7 @@
   <main class="cdn-plain" :style="pageStyle">
     <EmbedosTerminal
       class="cdn-plain__shell"
-      :auto-fetch="false"
+      :auto-start="false"
       :config="debianBullseyeBusyboxRuntime"
       :terminal="terminalOptions"
     />

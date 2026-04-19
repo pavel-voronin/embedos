@@ -1,7 +1,7 @@
-import { computed, onBeforeUnmount, ref, shallowRef, toValue } from "vue";
-import type { MaybeRefOrGetter, Ref, ShallowRef } from "vue";
+import { computed, onBeforeUnmount, ref, toValue } from "vue";
+import type { MaybeRefOrGetter, Ref } from "vue";
 import type { EmbedosRuntimeOptionsInput } from "../../../core/index.ts";
-import { cacheEmbedosAsset, hasCachedEmbedosAsset } from "../runtime/asset-response-cache.js";
+import { cacheEmbedosAsset } from "../runtime/asset-response-cache.js";
 
 type LaunchInlineOverlayFile = {
   contents?: string;
@@ -35,20 +35,6 @@ interface DownloadedAsset {
   contentLength: number;
   contentType: string;
   url: string;
-}
-
-async function probeCachedAsset(url: string): Promise<boolean> {
-  try {
-    const response = await fetch(url, {
-      cache: "only-if-cached",
-      method: "GET",
-      mode: "same-origin",
-    });
-
-    return response.ok;
-  } catch {
-    return false;
-  }
 }
 
 function toError(value: unknown): Error {
@@ -222,11 +208,8 @@ export function useEmbedosLaunchPreload(
   error: Ref<Error | null>;
   inFlight: Ref<boolean>;
   message: Ref<string>;
-  networkProgressDetected: Ref<boolean>;
   percent: Ref<number>;
-  preparedRuntime: ShallowRef<EmbedosRuntimeOptionsInput | null>;
   prepare: () => Promise<EmbedosRuntimeOptionsInput>;
-  readLaunchNetworkState: () => Promise<boolean>;
   reset: () => void;
   status: Ref<"idle" | "loading" | "ready" | "error">;
 } {
@@ -234,7 +217,6 @@ export function useEmbedosLaunchPreload(
   const bytesTotal = ref(0);
   const error = ref<Error | null>(null);
   const inFlight = ref(false);
-  const networkProgressDetected = ref(false);
   const message = ref("Download image");
   const percent = computed(() => {
     if (bytesTotal.value <= 0) {
@@ -243,7 +225,6 @@ export function useEmbedosLaunchPreload(
 
     return Math.max(0, Math.min(100, Math.round((bytesLoaded.value / bytesTotal.value) * 100)));
   });
-  const preparedRuntime = shallowRef<EmbedosRuntimeOptionsInput | null>(null);
   const status = ref<"idle" | "loading" | "ready" | "error">("idle");
 
   let activePromise: Promise<EmbedosRuntimeOptionsInput> | null = null;
@@ -253,49 +234,15 @@ export function useEmbedosLaunchPreload(
     abortController?.abort();
     abortController = null;
     activePromise = null;
-    preparedRuntime.value = null;
     bytesLoaded.value = 0;
     bytesTotal.value = 0;
     error.value = null;
     inFlight.value = false;
-    networkProgressDetected.value = false;
     message.value = "Download image";
     status.value = "idle";
   }
 
-  async function readLaunchNetworkState(): Promise<boolean> {
-    const nextRuntime = toValue(runtimeSource);
-    if (!nextRuntime) {
-      networkProgressDetected.value = false;
-      return false;
-    }
-
-    const targets = collectTargets(nextRuntime);
-    if (targets.length === 0) {
-      networkProgressDetected.value = false;
-      return false;
-    }
-
-    try {
-      const cachedTargets = await Promise.all(
-        targets.map((target) =>
-          hasCachedEmbedosAsset(target.url) ? true : probeCachedAsset(target.url),
-        ),
-      );
-      const needsNetwork = cachedTargets.some((isCached) => !isCached);
-      networkProgressDetected.value = needsNetwork;
-      return needsNetwork;
-    } catch {
-      networkProgressDetected.value = true;
-      return true;
-    }
-  }
-
   async function prepare(): Promise<EmbedosRuntimeOptionsInput> {
-    if (preparedRuntime.value) {
-      return preparedRuntime.value;
-    }
-
     if (activePromise) {
       return activePromise;
     }
@@ -316,15 +263,16 @@ export function useEmbedosLaunchPreload(
     activePromise = (async () => {
       try {
         const inspections = await Promise.all(
-          targets.map((target) => readContentLength(target.url, nextAbortController.signal)),
+          targets.map(async (target) => ({
+            size: await readContentLength(target.url, nextAbortController.signal),
+            target,
+          })),
         );
-        const totalBytes = inspections.reduce((sum, size) => sum + size, 0);
+        const totalBytes = inspections.reduce((sum, { size }) => sum + size, 0);
         bytesTotal.value = totalBytes;
         bytesLoaded.value = 0;
 
-        for (let index = 0; index < targets.length; index += 1) {
-          const target = targets[index];
-          const size = inspections[index];
+        for (const { size, target } of inspections) {
           message.value = `Downloading ${target.label}`;
 
           const asset = await downloadAsset(
@@ -339,7 +287,6 @@ export function useEmbedosLaunchPreload(
           cacheEmbedosAsset(asset);
         }
 
-        preparedRuntime.value = nextRuntime;
         status.value = "ready";
         message.value = "Assets ready";
         return nextRuntime;
@@ -348,7 +295,6 @@ export function useEmbedosLaunchPreload(
         error.value = normalizedCause;
         status.value = "error";
         message.value = normalizedCause.message;
-        preparedRuntime.value = null;
         throw normalizedCause;
       } finally {
         inFlight.value = false;
@@ -370,11 +316,8 @@ export function useEmbedosLaunchPreload(
     error,
     inFlight,
     message,
-    networkProgressDetected,
     percent,
-    preparedRuntime,
     prepare,
-    readLaunchNetworkState,
     reset,
     status,
   };

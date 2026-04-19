@@ -39,7 +39,7 @@
       >
         <component
           :is="EmbedosTerminal"
-          :auto-fetch="false"
+          :auto-start="false"
           :config="debianBullseyeBusyboxRuntime"
           :reset-overlay-on-start="true"
           :terminal="terminalOptions"

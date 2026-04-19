@@ -39,7 +39,7 @@
       >
         <component
           :is="terminalComponent"
-          :auto-fetch="true"
+          :auto-start="true"
           :config="config"
           :reset-overlay-on-start="resetOverlayOnStart"
           :storage-key="storageKey"

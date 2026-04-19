@@ -10,7 +10,7 @@
         variant="adaptive"
       >
         <EmbedosTerminal
-          :auto-fetch="false"
+          :auto-start="false"
           :config="brokenConfig"
           :reset-overlay-on-start="true"
           :terminal="terminalOptions"

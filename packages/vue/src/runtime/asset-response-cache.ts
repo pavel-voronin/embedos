@@ -561,7 +561,3 @@ export function cacheEmbedosAsset(asset: CachedAsset): void {
   });
   ensureInterceptorsInstalled();
 }
-
-export function hasCachedEmbedosAsset(url: string): boolean {
-  return cachedAssets.has(normalizeUrl(url));
-}

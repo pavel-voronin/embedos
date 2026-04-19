@@ -65,7 +65,7 @@ import EmbedosInitializingOverlay from "./EmbedosInitializingOverlay.vue";
 import EmbedosInviteOverlay from "./EmbedosInviteOverlay.vue";
 import { areCheerpXGlobalsReady, createEmbedosTerminalLaunchSlot } from "./embedos-launch-queue.js";
 import {
-  defaultAutoFetch,
+  defaultAutoStart,
   defaultResetOverlayOnStart,
   resolveTerminalResetOverlayOnStart,
 } from "./terminal-defaults.js";
@@ -93,9 +93,9 @@ type EmbedosTerminalLifecycleStage =
 let embedosTerminalInstanceNonce = 0;
 
 const props = defineProps({
-  autoFetch: {
+  autoStart: {
     type: Boolean,
-    default: defaultAutoFetch,
+    default: defaultAutoStart,
   },
   config: {
     type: [Object, Function] as PropType<EmbedosConfigLike>,
@@ -122,7 +122,7 @@ const emit = defineEmits<{
 }>();
 
 const terminalInstanceNonce = ++embedosTerminalInstanceNonce;
-const { autoFetch, resetOverlayOnStart, storageKey, terminal: terminalOptionsProp } = toRefs(props);
+const { autoStart, resetOverlayOnStart, storageKey, terminal: terminalOptionsProp } = toRefs(props);
 const lifecycleStage = ref<EmbedosTerminalLifecycleStage>("preparing");
 const preloadError = ref<Error | null>(null);
 const launchRequested = ref(false);
@@ -182,11 +182,9 @@ const overlayTheme = computed<EmbedosTerminalTheme | null>(() => {
 const downloadMessage = computed(() => launchPreload.message.value);
 const actualDownloadPercent = computed(() => launchPreload.percent.value);
 const downloadTotalBytes = computed(() => launchPreload.bytesTotal.value);
-const downloadLoadedBytes = computed(() => launchPreload.bytesLoaded.value);
 const activeError = computed(() => preloadError.value ?? error.value);
 const activeErrorMessage = computed(() => activeError.value?.message ?? null);
 const retryable = computed(() => resolvedRuntimeInput.value !== null);
-const isAutoFetchEnabled = computed(() => autoFetch.value === true);
 const errorTitle = computed(() =>
   error.value
     ? "Embedos configuration error"
@@ -548,23 +546,12 @@ async function resolveInitialLifecycle(): Promise<void> {
   resetLaunchError();
 
   await waitForCrossOriginIsolation();
-  const needsFetch = await launchPreload.readLaunchNetworkState();
   if (error.value) {
     lifecycleStage.value = "error";
     return;
   }
 
-  if (!needsFetch) {
-    if (isAutoFetchEnabled.value) {
-      await downloadAndInitialize();
-      return;
-    }
-
-    startInitialization();
-    return;
-  }
-
-  if (isAutoFetchEnabled.value) {
+  if (autoStart.value) {
     await downloadAndInitialize();
     return;
   }
@@ -589,18 +576,11 @@ async function launch(): Promise<void> {
     return;
   }
 
-  const needsFetch = await launchPreload.readLaunchNetworkState();
-
-  if (needsFetch || isAutoFetchEnabled.value) {
-    await downloadAndInitialize();
-    return;
-  }
-
   await downloadAndInitialize();
 }
 
 onMounted(async () => {
-  launchRequested.value = isAutoFetchEnabled.value;
+  launchRequested.value = autoStart.value;
   await resolveInitialLifecycle();
 });
 

@@ -7,7 +7,7 @@
         variant="adaptive"
       >
         <EmbedosTerminal
-          :auto-fetch="false"
+          :auto-start="false"
           :config="config"
           :reset-overlay-on-start="true"
           :storage-key="storageKey"
