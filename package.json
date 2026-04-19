@@ -38,7 +38,6 @@
     "vue": "^3.5.0"
   },
   "devDependencies": {
-    "@embedos/vite": "workspace:*",
     "@embedos/debian-bullseye-busybox-image-recipe": "workspace:*",
     "@embedos/debian-bullseye-busybox-recipe": "workspace:*",
     "@embedos/debian-bullseye-busybox-runtime": "workspace:*",

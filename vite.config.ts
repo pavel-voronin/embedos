@@ -6,7 +6,7 @@ import { fileURLToPath, URL } from "node:url";
 import path from "node:path";
 import { createReadStream } from "node:fs";
 import { stat } from "node:fs/promises";
-import { embedosVitePlugin } from "@embedos/vite";
+import { embedosVitePlugin } from "./packages/vite/src/index.ts";
 import type { Plugin } from "vite";
 
 const headers = {
